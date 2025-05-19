@@ -90,8 +90,9 @@ class MultiLSTM(nn.Module):
         else:
             return self.build_rnn_6()
 
-    def forward(self, (x, rnn_model_num)):
+    def forward(self, inputs):
 
+        x, rnn_model_num = inputs
         rnn_model = self.rnn_models[rnn_model_num - 1]
 
         if len(rnn_model) == 3:

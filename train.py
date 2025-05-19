@@ -16,16 +16,16 @@ parser.add_argument('--debug', action='store_true', help='Enable debug mode')
 args = parser.parse_args()
 
 if torch.cuda.is_available() and not args.usegpu:
-    print 'WARNING: You have a CUDA device, so you should probably run with --usegpu'
+    print('WARNING: You have a CUDA device, so you should probably run with --usegpu')
 
 def generate_run_id():
 
     username = getpass.getuser()
 
     now = datetime.datetime.now()
-    date = map(str, [now.year, now.month, now.day])
-    coarse_time = map(str, [now.hour, now.minute])
-    fine_time = map(str, [now.second, now.microsecond])
+    date = list(map(str, [now.year, now.month, now.day]))
+    coarse_time = list(map(str, [now.hour, now.minute]))
+    fine_time = list(map(str, [now.second, now.microsecond]))
 
     run_id = '_'.join(['-'.join(date), '-'.join(coarse_time), username, '-'.join(fine_time)])
     return run_id
@@ -66,7 +66,7 @@ model = Model(args.n_stations, s.MOVING_HORIZON, s.ACTIVATION, s.CRITERION, useg
 [X_train, y_train], [X_val, y_val], [X_test, y_test] = data.load_data_lstm_1()
 
 rnn_model_num = 1
-print '#' * 10 + ' RNN 1 ' + '#' * 10
+print('#' * 10 + ' RNN 1 ' + '#' * 10)
 
 train_loader = torch.utils.data.DataLoader(Loader((X_train, y_train)), batch_size=args.batch_size, shuffle=True,
                                            num_workers=args.n_workers, pin_memory=pin_memory)
@@ -82,7 +82,7 @@ model.fit(rnn_model_num, s.LEARNING_RATE, s.WEIGHT_DECAY, s.CLIP_GRAD_NORM, s.LR
 for rnn_model_num in range(2, s.MOVING_HORIZON + 1):
     X_train, y_train = data.load_data(X_train, y_train, model, rnn_model_num - 1)
     X_val, y_val = data.load_data(X_val, y_val, model, rnn_model_num - 1)
-    print '#' * 10 + ' RNN {} '.format(rnn_model_num) + '#' * 10
+    print('#' * 10 + ' RNN {} '.format(rnn_model_num) + '#' * 10)
     train_loader = torch.utils.data.DataLoader(Loader((X_train, y_train)), batch_size=args.batch_size, shuffle=True,
                                                num_workers=args.n_workers, pin_memory=pin_memory)
 
@@ -94,6 +94,6 @@ for rnn_model_num in range(2, s.MOVING_HORIZON + 1):
               train_loader, val_loader, model_save_path.format(rnn_model_num))
 
 
-print '\n\n' + '#' * 10 + ' TESTING ' + '#' * 10
+print('\n\n' + '#' * 10 + ' TESTING ' + '#' * 10)
 prediction_test = model.test([X_test, y_test])
 draw_graph_all_stations(output_dir, data, args.n_stations, y_test, prediction_test)

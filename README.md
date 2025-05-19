@@ -10,6 +10,7 @@
 * Go to the "reseg-pytorch/code/pytorch" : `cd reseg-pytorch/code/pytorch`
 * Create environment : `conda env create -f conda_environment.yml`
 * Activate environment : `source activate deep-forecast-pytorch`
+* This project now requires **Python 3**, so ensure your Conda environment uses Python 3.x.
 
 ## Code Structure
 

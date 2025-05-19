@@ -5,9 +5,9 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.autograd import Variable
 import torch.backends.cudnn as cudnn
 import numpy as np
-from itertools import ifilter
 
-from arch import MultiLSTM
+
+from .arch import MultiLSTM
 
 class Model(object):
 
@@ -28,7 +28,7 @@ class Model(object):
             self.model.cuda()
             #self.model = torch.nn.DataParallel(self.model, device_ids=range(self.ngpus))
 
-        print self.model
+        print(self.model)
 
     def __load_weights(self, load_model_path):
 
@@ -41,7 +41,7 @@ class Model(object):
 
         if load_model_path != '':
             assert os.path.isfile(load_model_path), 'Model : {} does not exists!'.format(load_model_path)
-            print 'Loading model from {}'.format(load_model_path)
+            print('Loading model from {}'.format(load_model_path))
 
             if self.usegpu:
                 self.model.load_state_dict(torch.load(load_model_path))
@@ -82,7 +82,7 @@ class Model(object):
                 for param in self.model.rnn_models[rnn_model_num_counter - 1].parameters():
                     param.requires_grad = False
 
-        parameters = ifilter(lambda p: p.requires_grad, self.model.rnn_models[rnn_model_num - 1].parameters())
+        parameters = filter(lambda p: p.requires_grad, self.model.rnn_models[rnn_model_num - 1].parameters())
 
         if optimizer == 'RMSprop':
             self.optimizer = optim.RMSprop(parameters, lr=learning_rate, weight_decay=weight_decay)
@@ -116,13 +116,13 @@ class Model(object):
                 param.requires_grad = False
             self.model.eval()
 
-        cpu_features, cpu_targets = train_test_iter.next()
+        cpu_features, cpu_targets = next(train_test_iter)
         cpu_features = cpu_features.contiguous()
         cpu_targets = cpu_targets.contiguous()
 
         if self.usegpu:
-            gpu_features = cpu_features.cuda(async=True)
-            gpu_targets = cpu_targets.cuda(async=True)
+            gpu_features = cpu_features.cuda(non_blocking=True)
+            gpu_targets = cpu_targets.cuda(non_blocking=True)
         else:
             gpu_features = cpu_features
             gpu_targets = cpu_targets
@@ -147,7 +147,7 @@ class Model(object):
 
     def __test(self, rnn_model_num, test_loader):
 
-        print '***** Testing *****'
+        print('***** Testing *****')
 
         n_minibatches = len(test_loader)
         test_iter = iter(test_loader)
@@ -160,7 +160,7 @@ class Model(object):
 
         test_loss = test_loss_averager.val()
 
-        print 'Loss : {}'.format(test_loss)
+        print('Loss : {}'.format(test_loss))
 
         return test_loss
 
@@ -202,7 +202,7 @@ class Model(object):
             epoch_end = time.time()
             epoch_duration = epoch_end - epoch_start
 
-            print '[{}] [{}/{}] Loss : {}'.format(epoch_duration, epoch, n_epochs, train_loss)
+            print('[{}] [{}/{}] Loss : {}'.format(epoch_duration, epoch, n_epochs, train_loss))
 
             val_loss = self.__test(rnn_model_num, test_loader)
 
@@ -233,8 +233,9 @@ class Model(object):
         # Load best model
         self.__load_weights(model_path)
 
-    def test(self, (X_test, y_test)):
+    def test(self, data):
 
+        X_test, y_test = data
         predicted = np.zeros_like(y_test)
 
         for ind in range(len(X_test)):
@@ -268,7 +269,7 @@ class Model(object):
 
         features = features.contiguous()
         if self.usegpu:
-            features = features.cuda(async=True)
+            features = features.cuda(non_blocking=True)
 
         features = self.__define_variable(features, volatile=True)
 

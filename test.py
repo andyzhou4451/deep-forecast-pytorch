@@ -14,7 +14,7 @@ parser.add_argument('--usegpu', action='store_true', help='Enable cuda to train 
 args = parser.parse_args()
 
 if torch.cuda.is_available() and not args.usegpu:
-    print 'WARNING: You have a CUDA device, so you should probably run with --usegpu'
+    print('WARNING: You have a CUDA device, so you should probably run with --usegpu')
 
 model_dir = os.path.dirname(args.model)
 
@@ -34,6 +34,6 @@ model = Model(args.n_stations, s.MOVING_HORIZON, s.ACTIVATION, s.CRITERION, load
 # Train First RNN
 _, _, [X_test, y_test] = data.load_data_lstm_1()
 
-print '\n\n' + '#' * 10 + ' TESTING ' + '#' * 10
+print('\n\n' + '#' * 10 + ' TESTING ' + '#' * 10)
 prediction_test = model.test([X_test, y_test])
 draw_graph_all_stations(model_dir, data, args.n_stations, y_test, prediction_test)

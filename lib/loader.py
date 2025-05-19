@@ -3,8 +3,9 @@ from torch.utils.data import Dataset
 class Loader(Dataset):
     """Dataset Reader"""
 
-    def __init__(self, (X, y)):
+    def __init__(self, data):
 
+        X, y = data
         self.features = X
         self.targets = y
 
