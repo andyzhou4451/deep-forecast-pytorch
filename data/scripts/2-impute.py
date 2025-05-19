@@ -19,14 +19,14 @@ org_data = org_data[1:]
 def convert2datetime(txt):
     return datetime.datetime.strptime(txt, '%Y-%m-%d %H:%M')
 
-org_data_dates = np.array(map(convert2datetime, org_data[:, 1]))
+org_data_dates = np.array(list(map(convert2datetime, org_data[:, 1])))
 
 n_hours = len(data)
 
-for i in xrange(data.shape[1] - 1):
+for i in range(data.shape[1] - 1):
     station_name = header[i + 1] # Station Names
     
-    print '#### ', i, station_name
+    print('#### ', i, station_name)
     
     wind_speeds = data[:, i + 1] # Wind Speeds for that station
 
@@ -37,7 +37,7 @@ for i in xrange(data.shape[1] - 1):
     
     missing_ratio = float(len(missing_indexes)) / n_hours
     
-    print missing_ratio
+    print(missing_ratio)
 
     if missing_ratio > 0.02:
         continue
@@ -74,14 +74,14 @@ new_header = []
 new_data = []
 
 n_hours = len(data)
-for i in xrange(data.shape[1] - 1):
+for i in range(data.shape[1] - 1):
     empties = np.where(data[:, i + 1] == 'None')[0]
     ms = np.where(data[:, i + 1] == 'M')[0]
     missing_indexes = list(empties) + list(ms)
     missing_indexes = list(set(missing_indexes))
     missing_ratio = float(len(missing_indexes)) / n_hours
     if missing_ratio <= 0.005:
-        print i, missing_ratio
+        print(i, missing_ratio)
         new_header.append(header[i + 1])
         new_data.append(data[:, i + 1])
 

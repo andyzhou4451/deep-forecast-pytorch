@@ -14,7 +14,7 @@ data = data[1:]
 def convert2datetime(txt):
     return datetime.datetime.strptime(txt, '%Y-%m-%d %H:%M')
 
-dates = np.array(map(convert2datetime, data[:,1]))
+dates = np.array(list(map(convert2datetime, data[:,1])))
 data = data[:, [0, 2]]
 
 #discarded_stations = ['XNT', '6B9', 'OLE', 'MTP', 'N03', 'NY0', 'OGS']
@@ -34,10 +34,10 @@ for station in stations:
     station_winds = station_winds[sort_idxes]
     station_dates = station_dates[sort_idxes]
 
-    select_idxes = np.array([i for i in xrange(len(station_dates)) if station_dates[i].minute == 50]) #TODO: 0
+    select_idxes = np.array([i for i in range(len(station_dates)) if station_dates[i].minute == 50]) #TODO: 0
 
     if len(select_idxes) == 0:
-        print station
+        print(station)
         continue
 
     station_winds = station_winds[select_idxes]
